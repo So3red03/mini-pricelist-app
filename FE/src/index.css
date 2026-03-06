@@ -1,0 +1,133 @@
+:root {
+  font-family: "Inter", "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  color: #0f172a;
+  background-color: #f8fafc;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  --color-primary: #2563eb;
+  --color-primary-dark: #1e3a8a;
+  --color-surface: #ffffff;
+  --color-border: #e2e8f0;
+  --shadow-soft: 0 8px 20px rgba(15, 23, 42, 0.08);
+  --radius: 12px;
+
+  --max-width-desktop: 1200px;
+  --max-width-tablet: 900px;
+  --max-width-mobile: 600px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: linear-gradient(180deg, #e2e8f0 0%, #f8fafc 100%);
+  color: #0f172a;
+}
+
+a {
+  color: var(--color-primary);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+a:hover,
+a:focus {
+  color: var(--color-primary-dark);
+  text-decoration: underline;
+}
+
+button {
+  border: 1px solid var(--color-primary);
+  background-color: var(--color-primary);
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 600;
+  padding: 0.65em 1.4em;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+button:hover,
+button:focus-visible {
+  background-color: var(--color-primary-dark);
+  transform: translateY(-1px);
+}
+
+.app-shell {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.app-container {
+  width: min(100% - 2rem, var(--max-width-desktop));
+  margin: 0 auto;
+  padding: 3rem 0 4rem;
+}
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.card {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  box-shadow: var(--shadow-soft);
+}
+
+.section-title {
+  margin-top: 3rem;
+  margin-bottom: 0.75rem;
+  font-size: clamp(1.25rem, 2vw, 1.5rem);
+}
+
+@media (max-width: 1024px) {
+  .app-container {
+    width: min(100% - 1.5rem, var(--max-width-tablet));
+    padding: 2.5rem 0 3rem;
+  }
+}
+
+@media (max-width: 768px) {
+  :root {
+    font-size: 15px;
+  }
+
+  .app-container {
+    width: min(100% - 1.25rem, var(--max-width-mobile));
+    padding: 2rem 0 2.5rem;
+  }
+
+  .card-grid {
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  }
+}
+
+@media (max-width: 480px) {
+  :root {
+    font-size: 14px;
+  }
+
+  .app-container {
+    width: 100%;
+    padding: 1.5rem 1rem 2rem;
+  }
+
+  .card-grid {
+    grid-template-columns: 1fr;
+  }
+}
