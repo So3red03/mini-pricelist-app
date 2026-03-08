@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { apiClient } from '../lib/apiClient'
-import { MEDIA } from '../constants/media'
+import { MEDIA } from '../constants/index'
 import { fallbackTranslations } from '../data/translations'
 
 const navItems = ['nav_home', 'nav_order', 'nav_customers', 'nav_about', 'nav_contact']
@@ -12,7 +12,7 @@ const languages = [
 
 const emptyErrors = { email: '', password: '' }
 
-const useLoginPage = (navigate) => {
+const useLogin = (navigate) => {
   const [selectedLanguage, setSelectedLanguage] = useState('sv')
   const [showLanguageMenu, setShowLanguageMenu] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
@@ -22,6 +22,7 @@ const useLoginPage = (navigate) => {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [translationMap, setTranslationMap] = useState(fallbackTranslations)
   const languageMenuRef = useRef(null)
+  const [user, setUser] = useState(null)
 
   useEffect(() => {
     let isMounted = true
@@ -54,6 +55,11 @@ const useLoginPage = (navigate) => {
     document.addEventListener('click', handler)
     return () => document.removeEventListener('click', handler)
   }, [])
+
+  const sessionMessage = useCallback(
+    (profile) => (selectedLanguage === 'sv' ? `Inloggad som ${profile.email}` : `Signed in as ${profile.email}`),
+    [selectedLanguage],
+  )
 
   const t = useCallback(
     (key) => translationMap[key]?.[selectedLanguage] ?? fallbackTranslations[key]?.[selectedLanguage] ?? key,
@@ -90,6 +96,28 @@ const useLoginPage = (navigate) => {
     return !newErrors.email && !newErrors.password
   }
 
+  const fetchProfile = useCallback(async () => {
+    try {
+      const { user: profile } = await apiClient('/auth/me')
+      if (profile) {
+        setUser(profile)
+        setServerMessage(sessionMessage(profile))
+      }
+    } catch {
+      setUser(null)
+    }
+  }, [sessionMessage])
+
+  useEffect(() => {
+    fetchProfile()
+  }, [fetchProfile])
+
+  useEffect(() => {
+    if (user) {
+      setServerMessage(sessionMessage(user))
+    }
+  }, [sessionMessage, user])
+
   const handleSubmit = async (event) => {
     event.preventDefault()
     setServerMessage('')
@@ -98,12 +126,21 @@ const useLoginPage = (navigate) => {
 
     try {
       setIsSubmitting(true)
-      await apiClient('/auth/login', {
+      const loginResponse = await apiClient('/auth/login', {
         method: 'POST',
         body: JSON.stringify({ email: form.email.trim(), password: form.password }),
       })
-      const successMsg = selectedLanguage === 'sv' ? 'Inloggning lyckades ?' : 'Login successful ?'
-      setServerMessage(successMsg)
+
+      const profile = loginResponse?.user ?? (await apiClient('/auth/me'))?.user
+
+      if (profile) {
+        setUser(profile)
+        setServerMessage(sessionMessage(profile))
+      } else {
+        const successMsg = selectedLanguage === 'sv' ? 'Inloggning lyckades \u2714' : 'Login successful \u2714'
+        setServerMessage(successMsg)
+      }
+
       setForm({ email: '', password: '' })
       setErrors(emptyErrors)
       setTimeout(() => navigate('/products', { replace: true }), 1200)
@@ -135,7 +172,8 @@ const useLoginPage = (navigate) => {
     navLinks,
     t,
     languageMenuRef,
+    user,
   }
 }
 
-export { useLoginPage }
+export { useLogin }

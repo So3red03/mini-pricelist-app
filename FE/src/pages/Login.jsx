@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import './login.css';
-import { MEDIA } from '../constants/media';
-import { useLoginPage } from '../hooks/useLoginPage';
+import { MEDIA } from '../constants/index';
+import { useLogin } from '../hooks/useLogin';
 
 function LoginPage() {
   const navigate = useNavigate();
@@ -22,7 +22,7 @@ function LoginPage() {
     navLinks,
     t,
     languageMenuRef
-  } = useLoginPage(navigate);
+  } = useLogin(navigate);
 
   return (
     <div className='login-page' style={{ backgroundImage: `url(${MEDIA.wallpaper})` }}>
