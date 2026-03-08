@@ -1,5 +1,5 @@
 insert into users (email, password_hash)
-values ('admin@lettfaktura.local', '$2b$10$2o7B4gU2zNh0Nfz3NFMV2O6tCuE6JbRWuKy5c0m7S.1o13JQw5J0G');
+values ('admin@lettfaktura.local', '$2b$10$V2FByYU8Bd.6lohjBkVULulHeZ8XCe9wB/o0.XLHHs7mvq24.d8OS');
 
 insert into products (article_no, name, in_price, price, unit, in_stock, description)
 values
