@@ -1,35 +1,49 @@
 # mini-pricelist-app
 
-## Local setup (Day 1)
+Simple React + Express pricelist tool with a PostgreSQL backend and JWT authentication. Frontend lives under `FE/`, backend under `BE/`.
 
-### 1) Start PostgreSQL
+## Local setup
 
-```bash
-docker compose up -d
-```
+1. **Start PostgreSQL**
 
-### 2) Create schema + seed data
+   ```bash
+   docker compose up -d postgres
+   ```
 
-```bash
-psql "postgresql://postgres:postgres@localhost:5432/lettfaktura" \\
-  -f BE/src/db/schema.sql \\
-  -f BE/src/db/seed.sql
-```
+2. **Bootstrap database**
 
-### 3) Backend
+   ```bash
+   cd BE
+   cp .env.example .env
+   npm install
+   npm run db:reset
+   ```
 
-```bash
-cd BE
-cp .env.example .env
-npm install
-npm run dev
-```
+   The seed inserts one admin user:
 
-### 4) Frontend
+   | Email | Password |
+   | --- | --- |
+   | `admin@lettfaktura.local` | `lettfaktura123` |
 
-```bash
-cd FE
-cp .env.example .env
-npm install
-npm run dev
-```
+3. **Run backend**
+
+   ```bash
+   npm run dev
+   ```
+
+   Useful endpoints while wiring the login screen:
+
+   - `POST http://localhost:4000/api/auth/login`
+   - `GET http://localhost:4000/api/auth/me`
+   - `GET http://localhost:4000/api/translations`
+
+4. **Run frontend**
+
+   ```bash
+   cd ../FE
+   cp .env.example .env
+   npm install
+   npm run dev
+   ```
+
+   The login page lives at `http://localhost:5173/login`. It fetches translations from the backend and posts credentials to `/api/auth/login`.
