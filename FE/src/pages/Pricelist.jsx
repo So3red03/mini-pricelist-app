@@ -265,13 +265,13 @@ function PricelistPage() {
 
             <div className="action-group">
               <button type="button">
-                New Product <small><AddIcon /></small>
+                <span className="action-label">New Product</span> <small><AddIcon /></small>
               </button>
               <button type="button">
-                Print List <small><PrintIcon /></small>
+                <span className="action-label">Print List</span> <small><PrintIcon /></small>
               </button>
               <button type="button">
-                Advanced mode <small><ToggleIcon /></small>
+                <span className="action-label">Advanced mode</span> <small><ToggleIcon /></small>
               </button>
             </div>
           </section>
@@ -346,3 +346,4 @@ function PricelistPage() {
 }
 
 export default PricelistPage
+
