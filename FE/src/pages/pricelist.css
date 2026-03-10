@@ -271,6 +271,17 @@
   max-height: none;
   overflow-y: auto;
   padding-right: 4px;
+  scrollbar-width: thin;
+  scrollbar-color: #9aa4ae transparent;
+}
+
+.table-body::-webkit-scrollbar {
+  width: 6px;
+}
+
+.table-body::-webkit-scrollbar-thumb {
+  background: #9aa4ae;
+  border-radius: 999px;
 }
 
 .table-row {
@@ -464,27 +475,77 @@
   }
 
   .price-main {
-    padding: 12px;
+    padding: 10px 12px 8px;
   }
 
   .price-controls {
     grid-template-columns: 1fr;
-    gap: 10px;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+
+  .search-field {
+    margin-bottom: 6px;
+  }
+
+  .search-field input {
+    font-size: 13px;
+    padding: 7px 32px 7px 12px;
+  }
+
+  .search-icon {
+    width: 19px;
+    height: 19px;
+    right: 10px;
+    top: 6px;
+  }
+
+  .action-group {
+    justify-content: space-between;
+    gap: 8px;
+    flex-wrap: nowrap;
   }
 
   .action-group button {
+    width: 31%;
+    min-width: 0;
     max-width: none;
-    padding: 10px 8px;
+    padding: 10px 6px;
+    justify-content: center;
+    gap: 0;
   }
 
   .action-group .action-label {
-    display: inline;
-    margin-right: 8px;
+    display: none;
+  }
+
+  .action-group small {
+    width: 18px;
+    height: 18px;
   }
 
   .table-head,
   .table-row {
-    grid-template-columns: 28px minmax(200px, 1fr) 102px 42px;
+    grid-template-columns: 28px minmax(180px, 1fr) 104px 42px;
+    gap: 8px;
+  }
+
+  .table-head {
+    font-size: 11px;
+    margin-bottom: 4px;
+  }
+
+  .cell {
+    font-size: 11px;
+    padding: 5px 10px;
+  }
+
+  .col-pointer {
+    font-size: 20px;
+  }
+
+  .more-btn {
+    font-size: 28px;
   }
 
   .col-article,
@@ -501,8 +562,33 @@
 }
 
 @media (max-width: 700px) and (orientation: portrait) {
+  .price-main {
+    padding: 10px 10px 8px;
+  }
+
   .table-head,
   .table-row {
-    grid-template-columns: 28px minmax(180px, 1fr) 102px 42px;
+    grid-template-columns: 26px minmax(150px, 1fr) 96px 36px;
+    gap: 6px;
+  }
+
+  .cell {
+    font-size: 10px;
+    padding: 4px 9px;
+  }
+
+  .more-btn {
+    font-size: 24px;
+  }
+}
+
+@media (max-width: 700px) and (orientation: landscape) {
+  .price-main {
+    padding: 10px 12px 8px;
+  }
+
+  .table-head,
+  .table-row {
+    grid-template-columns: 24px minmax(220px, 1fr) 110px 40px;
   }
 }

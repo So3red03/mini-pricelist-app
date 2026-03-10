@@ -218,7 +218,7 @@ function PricelistPage() {
           </div>
         </div>
         <div className="topbar-right">
-          <strong>Norsk Bokmal</strong>
+          <strong>English</strong>
           <img src={MEDIA.flags.en} alt="Language flag" />
         </div>
       </header>
