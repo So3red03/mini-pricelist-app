@@ -592,3 +592,17 @@
     grid-template-columns: 24px minmax(220px, 1fr) 110px 40px;
   }
 }
+
+.price-load-hint,
+.price-load-error {
+  font-size: 12px;
+  margin: 2px 0 8px;
+}
+
+.price-load-hint {
+  color: #64748b;
+}
+
+.price-load-error {
+  color: #c2410c;
+}

@@ -1,6 +1,7 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import './pricelist.css'
 import { MEDIA } from '../constants/index'
+import { apiClient } from '../lib/apiClient'
 
 const makeRows = () => {
   const base = [
@@ -51,6 +52,18 @@ const makeRows = () => {
   }
   return rows
 }
+
+const normalizeRows = (rows = []) =>
+  rows.map((row) => ({
+    id: String(row.id ?? ''),
+    article_no: String(row.article_no ?? ''),
+    name: String(row.name ?? ''),
+    in_price: String(row.in_price ?? ''),
+    price: String(row.price ?? ''),
+    unit: String(row.unit ?? ''),
+    in_stock: String(row.in_stock ?? ''),
+    description: String(row.description ?? ''),
+  }))
 
 const sideMenu = [
   { label: 'Invoices', icon: 'doc' },
@@ -187,6 +200,35 @@ function PricelistPage() {
   const [rows, setRows] = useState(makeRows)
   const [searchArticle, setSearchArticle] = useState('')
   const [searchProduct, setSearchProduct] = useState('')
+  const [isLoading, setIsLoading] = useState(true)
+  const [loadError, setLoadError] = useState('')
+
+  useEffect(() => {
+    let mounted = true
+
+    const loadProducts = async () => {
+      try {
+        setIsLoading(true)
+        setLoadError('')
+        const data = await apiClient('/products')
+        if (!mounted) return
+
+        const parsed = normalizeRows(data?.products ?? [])
+        setRows(parsed.length ? parsed : makeRows())
+      } catch (error) {
+        if (!mounted) return
+        setRows(makeRows())
+        setLoadError('Could not load products from backend. Showing demo data.')
+      } finally {
+        if (mounted) setIsLoading(false)
+      }
+    }
+
+    loadProducts()
+    return () => {
+      mounted = false
+    }
+  }, [])
 
   const filteredRows = useMemo(() => {
     return rows.filter((row) => {
@@ -265,25 +307,43 @@ function PricelistPage() {
 
             <div className="action-group">
               <button type="button">
-                <span className="action-label">New Product</span> <small><AddIcon /></small>
+                <span className="action-label">New Product</span>{' '}
+                <small>
+                  <AddIcon />
+                </small>
               </button>
               <button type="button">
-                <span className="action-label">Print List</span> <small><PrintIcon /></small>
+                <span className="action-label">Print List</span>{' '}
+                <small>
+                  <PrintIcon />
+                </small>
               </button>
               <button type="button">
-                <span className="action-label">Advanced mode</span> <small><ToggleIcon /></small>
+                <span className="action-label">Advanced mode</span>{' '}
+                <small>
+                  <ToggleIcon />
+                </small>
               </button>
             </div>
           </section>
+
+          {isLoading && <div className="price-load-hint">Loading products...</div>}
+          {loadError && <div className="price-load-error">{loadError}</div>}
 
           <section className="table-wrap">
             <div className="table-head">
               <span className="col-pointer" />
               <span className="col-article">
-                Article No. <i><SortIcon /></i>
+                Article No.{' '}
+                <i>
+                  <SortIcon />
+                </i>
               </span>
               <span className="col-name">
-                Product/Service <i><SortIcon /></i>
+                Product/Service{' '}
+                <i>
+                  <SortIcon />
+                </i>
               </span>
               <span className="col-inprice">In Price</span>
               <span className="col-price">Price</span>
@@ -346,4 +406,3 @@ function PricelistPage() {
 }
 
 export default PricelistPage
-
