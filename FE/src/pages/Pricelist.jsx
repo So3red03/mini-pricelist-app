@@ -3,55 +3,6 @@ import './pricelist.css'
 import { MEDIA } from '../constants/index'
 import { apiClient } from '../lib/apiClient'
 
-const makeRows = () => {
-  const base = [
-    {
-      id: '1',
-      article_no: '1234567890',
-      name: 'This is a test product with fifty characters this!',
-      in_price: '900500',
-      price: '1500800',
-      unit: 'kilometers/hour',
-      in_stock: '2500600',
-      description: 'This is the description with fifty characters this',
-    },
-    {
-      id: '2',
-      article_no: '1234567891',
-      name: 'Sony DSLR 12345',
-      in_price: '5000',
-      price: '15000',
-      unit: 'pcs',
-      in_stock: '500',
-      description: 'Camera package',
-    },
-    {
-      id: '3',
-      article_no: '1234567892',
-      name: 'Random product',
-      in_price: '600',
-      price: '1234',
-      unit: 'box',
-      in_stock: '120',
-      description: 'Random item',
-    },
-  ]
-
-  const rows = [...base]
-  for (let i = 4; i <= 20; i += 1) {
-    rows.push({
-      id: String(i),
-      article_no: `1234567${String(i).padStart(3, '0')}`,
-      name: `Sample product ${i}`,
-      in_price: String(1000 + i * 17),
-      price: String(3000 + i * 33),
-      unit: i % 2 === 0 ? 'pcs' : 'month',
-      in_stock: String(100 + i * 5),
-      description: `Description item ${i}`,
-    })
-  }
-  return rows
-}
 
 const normalizeRows = (rows = []) =>
   rows.map((row) => ({
@@ -197,7 +148,7 @@ const SortIcon = () => (
 )
 
 function PricelistPage() {
-  const [rows, setRows] = useState(makeRows)
+  const [rows, setRows] = useState([])
   const [searchArticle, setSearchArticle] = useState('')
   const [searchProduct, setSearchProduct] = useState('')
   const [isLoading, setIsLoading] = useState(true)
@@ -214,11 +165,11 @@ function PricelistPage() {
         if (!mounted) return
 
         const parsed = normalizeRows(data?.products ?? [])
-        setRows(parsed.length ? parsed : makeRows())
+        setRows(parsed)
       } catch (error) {
         if (!mounted) return
-        setRows(makeRows())
-        setLoadError('Could not load products from backend. Showing demo data.')
+        setRows([])
+        setLoadError('Could not load products from backend.')
       } finally {
         if (mounted) setIsLoading(false)
       }
@@ -406,3 +357,4 @@ function PricelistPage() {
 }
 
 export default PricelistPage
+
