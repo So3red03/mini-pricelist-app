@@ -1,5 +1,5 @@
 :root {
-  font-family: "Inter", "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
   line-height: 1.5;
   font-weight: 400;
   color: #0f172a;
@@ -58,7 +58,6 @@ button {
 
 button:hover,
 button:focus-visible {
-  background-color: var(--color-primary-dark);
   transform: translateY(-1px);
 }
 
