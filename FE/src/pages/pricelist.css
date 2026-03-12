@@ -606,3 +606,19 @@
 .price-load-error {
   color: #c2410c;
 }
+
+.table-row.is-saving .cell {
+  opacity: 0.78;
+}
+
+.more-btn.state-saving {
+  color: #64748b;
+}
+
+.more-btn.state-saved {
+  color: #16a34a;
+}
+
+.more-btn.state-error {
+  color: #dc2626;
+}

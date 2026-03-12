@@ -3,7 +3,6 @@ import './pricelist.css'
 import { MEDIA } from '../constants/index'
 import { apiClient } from '../lib/apiClient'
 
-
 const normalizeRows = (rows = []) =>
   rows.map((row) => ({
     id: String(row.id ?? ''),
@@ -15,6 +14,33 @@ const normalizeRows = (rows = []) =>
     in_stock: String(row.in_stock ?? ''),
     description: String(row.description ?? ''),
   }))
+
+const rowFields = ['article_no', 'name', 'in_price', 'price', 'unit', 'in_stock', 'description']
+
+const isRowChanged = (current, previous) =>
+  rowFields.some((field) => String(current?.[field] ?? '') !== String(previous?.[field] ?? ''))
+
+const toUpdatePayload = (row) => {
+  const articleNo = String(row.article_no ?? '').trim()
+  const name = String(row.name ?? '').trim()
+  const unit = String(row.unit ?? '').trim()
+  const inPrice = Number(row.in_price)
+  const price = Number(row.price)
+  const inStock = Number(row.in_stock)
+
+  if (!articleNo || !name || !unit) return null
+  if (!Number.isFinite(inPrice) || !Number.isFinite(price) || !Number.isInteger(inStock)) return null
+
+  return {
+    article_no: articleNo,
+    name,
+    in_price: inPrice,
+    price,
+    unit,
+    in_stock: inStock,
+    description: row.description == null ? null : String(row.description),
+  }
+}
 
 const sideMenu = [
   { label: 'Invoices', icon: 'doc' },
@@ -149,10 +175,13 @@ const SortIcon = () => (
 
 function PricelistPage() {
   const [rows, setRows] = useState([])
+  const [savedRows, setSavedRows] = useState({})
+  const [saveStateById, setSaveStateById] = useState({})
   const [searchArticle, setSearchArticle] = useState('')
   const [searchProduct, setSearchProduct] = useState('')
   const [isLoading, setIsLoading] = useState(true)
   const [loadError, setLoadError] = useState('')
+  const [saveError, setSaveError] = useState('')
 
   useEffect(() => {
     let mounted = true
@@ -165,10 +194,17 @@ function PricelistPage() {
         if (!mounted) return
 
         const parsed = normalizeRows(data?.products ?? [])
+        const snapshot = {}
+        parsed.forEach((row) => {
+          snapshot[row.id] = row
+        })
+
         setRows(parsed)
-      } catch (error) {
+        setSavedRows(snapshot)
+      } catch {
         if (!mounted) return
         setRows([])
+        setSavedRows({})
         setLoadError('Could not load products from backend.')
       } finally {
         if (mounted) setIsLoading(false)
@@ -191,6 +227,48 @@ function PricelistPage() {
 
   const handleChange = (id, field, value) => {
     setRows((prev) => prev.map((row) => (row.id === id ? { ...row, [field]: value } : row)))
+  }
+
+  const handleFieldBlur = async (rowId) => {
+    const currentRow = rows.find((row) => row.id === rowId)
+    const previousRow = savedRows[rowId]
+
+    if (!currentRow || !previousRow) return
+    if (!isRowChanged(currentRow, previousRow)) return
+
+    const payload = toUpdatePayload(currentRow)
+    if (!payload) {
+      setSaveStateById((prev) => ({ ...prev, [rowId]: 'error' }))
+      setSaveError('Could not save. Check required fields and numeric values.')
+      return
+    }
+
+    try {
+      setSaveError('')
+      setSaveStateById((prev) => ({ ...prev, [rowId]: 'saving' }))
+
+      const data = await apiClient(`/products/${rowId}`, {
+        method: 'PUT',
+        body: JSON.stringify(payload),
+      })
+
+      const normalized = normalizeRows([data?.product ?? currentRow])[0]
+      setRows((prev) => prev.map((row) => (row.id === rowId ? normalized : row)))
+      setSavedRows((prev) => ({ ...prev, [rowId]: normalized }))
+      setSaveStateById((prev) => ({ ...prev, [rowId]: 'saved' }))
+
+      setTimeout(() => {
+        setSaveStateById((prev) => {
+          if (prev[rowId] !== 'saved') return prev
+          const next = { ...prev }
+          delete next[rowId]
+          return next
+        })
+      }, 1200)
+    } catch {
+      setSaveStateById((prev) => ({ ...prev, [rowId]: 'error' }))
+      setSaveError('Could not save one or more changes.')
+    }
   }
 
   return (
@@ -280,6 +358,10 @@ function PricelistPage() {
 
           {isLoading && <div className="price-load-hint">Loading products...</div>}
           {loadError && <div className="price-load-error">{loadError}</div>}
+          {saveError && <div className="price-load-error">{saveError}</div>}
+          {!isLoading && !loadError && (
+            <div className="price-load-hint">Autosave: edit a field and click outside the field.</div>
+          )}
 
           <section className="table-wrap">
             <div className="table-head">
@@ -306,44 +388,51 @@ function PricelistPage() {
 
             <div className="table-body">
               {filteredRows.map((row, index) => (
-                <div className="table-row" key={row.id}>
+                <div className={`table-row ${saveStateById[row.id] === 'saving' ? 'is-saving' : ''}`} key={row.id}>
                   <span className="col-pointer">{index === 0 ? '->' : ''}</span>
                   <input
                     className="cell col-article"
                     value={row.article_no}
                     onChange={(event) => handleChange(row.id, 'article_no', event.target.value)}
+                    onBlur={() => handleFieldBlur(row.id)}
                   />
                   <input
                     className="cell col-name"
                     value={row.name}
                     onChange={(event) => handleChange(row.id, 'name', event.target.value)}
+                    onBlur={() => handleFieldBlur(row.id)}
                   />
                   <input
                     className="cell col-inprice"
                     value={row.in_price}
                     onChange={(event) => handleChange(row.id, 'in_price', event.target.value)}
+                    onBlur={() => handleFieldBlur(row.id)}
                   />
                   <input
                     className="cell col-price"
                     value={row.price}
                     onChange={(event) => handleChange(row.id, 'price', event.target.value)}
+                    onBlur={() => handleFieldBlur(row.id)}
                   />
                   <input
                     className="cell col-unit"
                     value={row.unit}
                     onChange={(event) => handleChange(row.id, 'unit', event.target.value)}
+                    onBlur={() => handleFieldBlur(row.id)}
                   />
                   <input
                     className="cell col-stock"
                     value={row.in_stock}
                     onChange={(event) => handleChange(row.id, 'in_stock', event.target.value)}
+                    onBlur={() => handleFieldBlur(row.id)}
                   />
                   <input
                     className="cell col-description"
                     value={row.description}
                     onChange={(event) => handleChange(row.id, 'description', event.target.value)}
+                    onBlur={() => handleFieldBlur(row.id)}
                   />
-                  <button type="button" className="more-btn col-more">
+                  <button type="button" className={`more-btn col-more state-${saveStateById[row.id] ?? 'idle'}`}>
                     ...
                   </button>
                 </div>

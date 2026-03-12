@@ -7,8 +7,11 @@ const productRouter = Router()
 productRouter.get('/products', authMiddleware, async (_req, res) => {
   try {
     const { rows } = await query(
-      'select id, article_no, name, in_price, price, unit, in_stock, description from products order by created_at asc',
+      'select id, article_no, name, in_price, price, unit, in_stock, description from products order by article_no asc, id asc',
     )
+    res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private')
+    res.set('Pragma', 'no-cache')
+    res.set('Expires', '0')
     res.json({ products: rows })
   } catch (error) {
     console.error('Products fetch failed', error)
@@ -59,3 +62,4 @@ productRouter.put('/products/:id', authMiddleware, async (req, res) => {
 })
 
 export { productRouter }
+

@@ -17,6 +17,7 @@ function LoginPage() {
     errors,
     serverMessage,
     isSubmitting,
+    isRedirecting,
     handleInputChange,
     handleSubmit,
     navLinks,
@@ -92,7 +93,7 @@ function LoginPage() {
                 aria-label='Toggle password visibility'
                 onClick={() => setShowPassword(prev => !prev)}
               >
-                {showPassword ? '🙈' : '👁️'}
+                {showPassword ? 'Hide' : 'Show'}
               </button>
             </div>
             {errors.password && <small className='error-text'>{errors.password}</small>}
@@ -100,8 +101,8 @@ function LoginPage() {
 
           {serverMessage && <div className='server-message'>{serverMessage}</div>}
 
-          <button type='submit' disabled={isSubmitting}>
-            {isSubmitting ? '...' : t('login_button')}
+          <button type='submit' disabled={isSubmitting || isRedirecting}>
+            {isSubmitting ? 'Logging in...' : isRedirecting ? 'Redirecting...' : t('login_button')}
           </button>
 
           <div className='login-links'>

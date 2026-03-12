@@ -20,6 +20,7 @@ const useLogin = (navigate) => {
   const [errors, setErrors] = useState(emptyErrors)
   const [serverMessage, setServerMessage] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isRedirecting, setIsRedirecting] = useState(false)
   const [translationMap, setTranslationMap] = useState(fallbackTranslations)
   const languageMenuRef = useRef(null)
   const [user, setUser] = useState(null)
@@ -137,12 +138,14 @@ const useLogin = (navigate) => {
         setUser(profile)
         setServerMessage(sessionMessage(profile))
       } else {
-        const successMsg = selectedLanguage === 'sv' ? 'Inloggning lyckades \u2714' : 'Login successful \u2714'
+        const successMsg = selectedLanguage === 'sv' ? 'Inloggning lyckades' : 'Login successful'
         setServerMessage(successMsg)
       }
 
       setForm({ email: '', password: '' })
       setErrors(emptyErrors)
+      setIsRedirecting(true)
+      setServerMessage((selectedLanguage === 'sv' ? 'Omdirigerar...' : 'Redirecting...'))
       setTimeout(() => navigate('/products', { replace: true }), 1200)
     } catch (error) {
       const fallback =
@@ -150,6 +153,7 @@ const useLogin = (navigate) => {
           ? 'Inloggning misslyckades. Kontrollera uppgifterna.'
           : 'Login failed. Check credentials.'
       setServerMessage(error.message || fallback)
+      setIsRedirecting(false)
     } finally {
       setIsSubmitting(false)
     }
@@ -167,6 +171,7 @@ const useLogin = (navigate) => {
     errors,
     serverMessage,
     isSubmitting,
+    isRedirecting,
     handleInputChange,
     handleSubmit,
     navLinks,
