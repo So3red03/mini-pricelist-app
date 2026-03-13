@@ -27,10 +27,10 @@ services:
       - key: CORS_ORIGIN
         value: https://lettfaktura-fe.onrender.com
 
-  - type: static
+  - type: web
     name: lettfaktura-fe
+    runtime: static
     rootDir: FE
-    plan: free
     buildCommand: npm install && npm run build
     staticPublishPath: dist
     routes:
