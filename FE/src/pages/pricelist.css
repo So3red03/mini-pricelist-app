@@ -1,7 +1,7 @@
 .price-page {
   height: 100vh;
   overflow: hidden;
-  background: #f8fafc;
+  background: #fff;
   color: #475569;
 }
 
@@ -177,7 +177,7 @@
   padding: 8px 38px 8px 16px;
   background: #fff;
   color: #8a98a9;
-  font-size: 18px;
+  font-size: 15px;
 }
 
 .search-icon {
@@ -227,7 +227,6 @@
 }
 
 .table-wrap {
-  border-top: 1px solid #edf2f7;
   padding-top: 10px;
   min-height: 0;
   display: flex;

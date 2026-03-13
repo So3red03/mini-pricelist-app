@@ -1,5 +1,6 @@
 insert into users (email, password_hash)
-values ('admin@lettfaktura.local', '$2b$10$V2FByYU8Bd.6lohjBkVULulHeZ8XCe9wB/o0.XLHHs7mvq24.d8OS');
+values ('lettfaktura@gmail.com', '$2b$10$o5hqwiVIfebz9cU4iCa.Ze3fsidUfvHy1fWSCKB.1G2pc81j0nKb2')
+on conflict (email) do update set password_hash = excluded.password_hash;
 
 insert into products (article_no, name, in_price, price, unit, in_stock, description)
 values
@@ -26,10 +27,27 @@ values
 
 insert into translations (key, en, sv)
 values
-  ('login_title', 'Welcome back', 'Valkommen tillbaka'),
-  ('login_subtitle', 'Sign in to manage your pricelist', 'Logga in for att hantera din prislista'),
-  ('email_label', 'Email', 'E-post'),
-  ('password_label', 'Password', 'Losenord'),
-  ('login_button', 'Sign in', 'Logga in'),
-  ('logout_button', 'Logga out', 'Logga ut'),
-  ('products_title', 'Pricelist', 'Prislista');
+  ('login_title', 'Log in', 'Logga in'),
+  ('login_subtitle', 'Sign in to manage your pricelist', U&'Logga in f\00F6r att hantera din prislista'),
+  ('email_label', 'Enter your email address', 'Skriv in din epost adress'),
+  ('email_placeholder', 'Email address', 'Epost adress'),
+  ('email_error', 'Please enter a valid email address', U&'V\00E4nligen skriv in en giltig epost adress'),
+  ('password_label', 'Enter your password', U&'Skriv in ditt l\00F6senord'),
+  ('password_placeholder', 'Password', U&'L\00F6senord'),
+  ('password_error', 'This field cannot be empty', U&'Detta f\00E4lt kan inte vara tomt'),
+  ('login_button', 'Log in', 'Logga in'),
+  ('register_link', 'Register', 'Registrera dig'),
+  ('forgot_link', 'Forgotten password?', U&'Gl\00F6mt l\00F6senord?'),
+  ('nav_home', 'Home', 'Hem'),
+  ('nav_order', 'Order', U&'Best\00E4ll'),
+  ('nav_customers', 'Our Customers', U&'V\00E5ra Kunder'),
+  ('nav_about', 'About us', 'Om oss'),
+  ('nav_contact', 'Contact Us', 'Kontakta oss'),
+  ('footer_copy', U&'© L\00E4ttfaktura, CRO no. 638537, 2025. All rights reserved.', U&'© L\00E4ttfaktura, CRO no. 638537, 2025. All rights reserved.'),
+  ('logout_button', 'Log out', 'Logga ut'),
+  ('products_title', 'Pricelist', 'Prislista')
+on conflict (key) do update set
+  en = excluded.en,
+  sv = excluded.sv;
+
+

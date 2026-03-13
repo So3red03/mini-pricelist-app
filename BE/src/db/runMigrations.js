@@ -18,6 +18,9 @@ const runMigrations = async () => {
   console.log('Applying schema...')
   await pool.query(schemaSql)
 
+  console.log('Resetting seed tables...')
+  await pool.query('truncate table translations, products, users restart identity cascade')
+
   console.log('Seeding data...')
   await pool.query(seedSql)
 }

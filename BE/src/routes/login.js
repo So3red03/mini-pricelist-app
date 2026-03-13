@@ -38,7 +38,7 @@ loginRouter.post('/auth/login', async (req, res) => {
       httpOnly: true,
       sameSite: 'lax',
       secure: env.nodeEnv === 'production',
-      maxAge: 1000 * 60 * 60,
+      maxAge: 1000 * 60 * 60 * 2,
     })
 
     res.json({ token, user: { id: user.id, email: user.email } })
@@ -53,3 +53,4 @@ loginRouter.get('/auth/me', authMiddleware, (req, res) => {
 })
 
 export { loginRouter }
+

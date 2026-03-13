@@ -1,5 +1,11 @@
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:4000/api'
 
+const shouldRedirectToLogin = (path) => {
+  if (typeof window === 'undefined') return false
+  if (path === '/auth/login') return false
+  return window.location.pathname !== '/login'
+}
+
 const apiClient = async (path, options = {}) => {
   const response = await fetch(`${API_BASE_URL}${path}`, {
     cache: 'no-store',
@@ -10,6 +16,10 @@ const apiClient = async (path, options = {}) => {
     credentials: 'include',
     ...options,
   })
+
+  if (response.status === 401 && shouldRedirectToLogin(path)) {
+    window.location.replace('/login')
+  }
 
   if (!response.ok) {
     const errorBody = await response.text()
